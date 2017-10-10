@@ -57,5 +57,45 @@ namespace Jayrock.Json.Conversion.Converters
                 throw new JsonException(string.Format("The JSON Number {0} must be an integer to be convertible to System.Boolean.", reader.Text), e);
             }
         }
+
+        protected override object ImportFromString(ImportContext context, JsonReader reader)
+        {
+            Debug.Assert(context != null);
+            Debug.Assert(reader != null);
+
+            try
+            {
+                string value = reader.ReadString();
+                bool result;
+                try
+                {
+                    switch (value)
+                    {
+                        case "0":
+                            result = false;
+                            break;
+                        case "1":
+                            result = true;
+                            break;
+                        default:
+                            result = Convert.ToBoolean(value);
+                            break;
+                    }
+                }
+                catch (Exception exc)
+                {
+                    throw new FormatException("Format not compatible with type System.Boolean", exc);
+
+                }
+
+                return result;
+            }
+            catch (FormatException e)
+            {
+                throw new JsonException(
+                    string.Format("The JSON String {0} must be a string convertible to System.Boolean.", reader.Text), e);
+
+            }
+        }
     }
 }
